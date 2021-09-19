@@ -19,9 +19,10 @@ def codifyData(domStart: float, domEnd: float, alleles: int) -> dict:
     Retorna un diccionario de genes compuestos por una cierta cantidad de alelos
     """
     solutions = {}
-    increment = ( abs(domStart) + abs(domEnd) ) / ( alleles ** 2)
-    maxDigits = len(decimalToBinary(alleles ** 2 + 1))
-    for i in range(alleles ** 2 + 1):
+    increment = ( abs(domStart) + abs(domEnd) ) / ( 2 ** alleles - 1 )
+    maxDigits = len(decimalToBinary(2 ** alleles - 1))
+    print(decimalToBinary(2 ** alleles + 1))
+    for i in range(2 ** alleles):
         key = decimalToBinary(i)
         if len(key) < maxDigits:
             key = fillZeros(key, maxDigits)
@@ -30,7 +31,11 @@ def codifyData(domStart: float, domEnd: float, alleles: int) -> dict:
     return solutions
 
 # Datos iniciales
-gen = 20
-domStart = -4
-domEnd = 4
-print( codifyData(domStart, domEnd, 4) )
+generations = 20
+domStart = -200
+domEnd = 200
+
+x = codifyData(domStart, domEnd, 10)
+# y = codifyData(domStart, domEnd, 10)
+
+print(len(x))
