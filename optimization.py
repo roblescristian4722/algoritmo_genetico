@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 def decimalToBinary(num: int) -> str:
     """Convierte un entero decimal a binario en formato string"""
     holder = ""
@@ -10,18 +12,11 @@ def fillZeros(binary: str, n: int):
     """Llena un número binario con ceros a la izquierda"""
     return '0' * (n - len(binary)) + binary
 
-
 def codifyData(domStart: float, domEnd: float, alleles: int) -> dict:
-    """
-    domStart: inicio del dominio
-    domEnd: final del dominio
-    alleles: Cantidad de alelos (bit) por cada gen a generar
-    Retorna un diccionario de genes compuestos por una cierta cantidad de alelos
-    """
+    """Retorna un diccionario de genes compuestos por una cierta cantidad de alelos"""
     solutions = {}
     increment = ( abs(domStart) + abs(domEnd) ) / ( 2 ** alleles - 1 )
     maxDigits = len(decimalToBinary(2 ** alleles - 1))
-    print(decimalToBinary(2 ** alleles + 1))
     for i in range(2 ** alleles):
         key = decimalToBinary(i)
         if len(key) < maxDigits:
@@ -30,12 +25,44 @@ def codifyData(domStart: float, domEnd: float, alleles: int) -> dict:
         domStart += increment
     return solutions
 
+def absolute(*args) -> float:
+    """Benchmark function"""
+    res = 0
+    for x in args:
+        res += abs(x)
+    return res
+
+def greatest(x: list):
+    """returns greatest value of a list"""
+    greatest = abs(x[0])
+    for i in x:
+        greatest = abs(i) if abs(i) > greatest else greatest
+    return greatest
+
+def fitness(x, greatest):
+    """Fitness function"""
+    fit = []
+    for i in x:
+        fit.append(-absolute(i) + greatest)
+    # Relative fitness
+    print(fit)
+    i = 0
+    while i < len(x):
+        x[i] = fit[i] / sum(fit)
+        i += 1
+
 # Datos iniciales
 generations = 20
-domStart = -200
-domEnd = 200
+domStart = -10
+domEnd = 10
 
-x = codifyData(domStart, domEnd, 10)
-# y = codifyData(domStart, domEnd, 10)
+x = codifyData(domStart, domEnd, 8)
+y = codifyData(domStart, domEnd, 8)
 
-print(len(x))
+sampleX = [ v for _, v in x.items() ]
+sampleY = [ v for _, v in y.items() ]
+X = sampleX[:10]
+Y = sampleY[:10]
+
+fitness(X, greatest(sampleX))
+fitness(Y, greatest(sampleY))
