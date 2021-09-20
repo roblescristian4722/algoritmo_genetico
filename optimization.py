@@ -32,24 +32,33 @@ def absolute(*args) -> float:
         res += abs(x)
     return res
 
-def greatest(x: list):
+def greatest(x: dict):
     """returns greatest value of a list"""
-    greatest = abs(x[0])
-    for i in x:
-        greatest = abs(i) if abs(i) > greatest else greatest
+    greatest = 0
+    for _, v in x.items():
+        greatest = abs(v) if abs(v) > greatest else greatest
     return greatest
 
-def fitness(x, greatest):
+def fitness(x: dict, greatest):
     """Fitness function"""
-    fit = []
-    for i in x:
-        fit.append(-absolute(i) + greatest)
+    fit = {}
+    for k, v in x.items():
+        fit[k] = -absolute(v) + greatest
     # Relative fitness
-    print(fit)
+    for k, v in fit.items():
+        x[k] = fit[k] / sum(fit.values())
+
+def subdict(x: dict, start, end):
+    """Retorna un subdirectorio de un determinado rango en un directorio"""
+    sub = {}
     i = 0
-    while i < len(x):
-        x[i] = fit[i] / sum(fit)
+    for k, v in x.items():
+        if i >= start and i <= end:
+            sub[k] = v
+            if i == end:
+                break
         i += 1
+    return sub
 
 # Datos iniciales
 generations = 20
@@ -59,10 +68,7 @@ domEnd = 10
 x = codifyData(domStart, domEnd, 8)
 y = codifyData(domStart, domEnd, 8)
 
-sampleX = [ v for _, v in x.items() ]
-sampleY = [ v for _, v in y.items() ]
-X = sampleX[:10]
-Y = sampleY[:10]
-
-fitness(X, greatest(sampleX))
-fitness(Y, greatest(sampleY))
+X = subdict(x, 0, 9)
+Y = subdict(x, 0, 9)
+fitness(X, greatest(X))
+fitness(Y, greatest(Y))
