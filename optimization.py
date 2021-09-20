@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import random
 
 def decimalToBinary(num: int) -> str:
     """Convierte un entero decimal a binario en formato string"""
@@ -48,7 +49,7 @@ def fitness(x: dict, greatest):
     for k, v in fit.items():
         x[k] = fit[k] / sum(fit.values())
 
-def subdict(x: dict, start, end):
+def subdict(x: dict, start, end) -> dict:
     """Retorna un subdirectorio de un determinado rango en un directorio"""
     sub = {}
     i = 0
@@ -60,15 +61,47 @@ def subdict(x: dict, start, end):
         i += 1
     return sub
 
+def getParents(fit: dict, n: int) -> list:
+    """Realiza la cruza"""
+    parent = []
+    parents = []
+    while (len(parents) < n - 2):
+        r = random.random()
+        for k, v in fit.items():
+            if len(parent) == 2:
+                break
+            if r < v and ( len(parent) == 0 or (len(parent) == 1 and parent[0] != k) ):
+                parent.append(k)
+        if len(parent) == 2:
+            parents.append(parent)
+            parent = []
+    return parents
+
+def crossover(fit: dict, n: int):
+    for parents in getParents(fit, n):
+        crossPoint = int(( random.random() * 10 ) % ( n - 1 )) + 1
+        print(crossPoint)
+        print(parents)
+        child1 = parents[0][:crossPoint] + parents[1][crossPoint:]
+        child2 = parents[1][:crossPoint] + parents[0][crossPoint:]
+        print(f"child1: {child1} | child2: {child2}")
+
+
 # Datos iniciales
 generations = 20
 domStart = -10
 domEnd = 10
+parentsGeneration = 10
+alleles = 8
 
-x = codifyData(domStart, domEnd, 8)
-y = codifyData(domStart, domEnd, 8)
+x = codifyData(domStart, domEnd, alleles)
+y = codifyData(domStart, domEnd, alleles)
+gr = greatest(x)
 
-X = subdict(x, 0, 9)
-Y = subdict(x, 0, 9)
-fitness(X, greatest(X))
-fitness(Y, greatest(Y))
+fitX = subdict(x, 0, parentsGeneration - 1)
+fitY = subdict(y, 0, parentsGeneration - 1)
+
+fitness(fitX, gr)
+fitness(fitY, gr)
+
+crossover(fitX, alleles)
