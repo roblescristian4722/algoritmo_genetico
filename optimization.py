@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import random
+from random import random
 
 def decimalToBinary(num: int) -> str:
     """Convierte un entero decimal a binario en formato string"""
@@ -68,7 +68,7 @@ def getParents(fit: list) -> list:
     parent = []
     parents = []
     while (len(parents) < len(fit) / 2):
-        r = random.random()
+        r = random()
         for k, v in fit:
             if len(parent) == 2:
                 break
@@ -83,7 +83,7 @@ def crossover(fit: list, n: int) -> list:
     """Realiza la cruza"""
     newGen = []
     for parents in getParents(fit):
-        crossPoint = int(( random.random() * 10 ) % ( n - 1 )) + 1
+        crossPoint = int(( random() * 10 ) % ( n - 1 )) + 1
         newGen.append( parents[0][:crossPoint] + parents[1][crossPoint:] )
         newGen.append( parents[1][:crossPoint] + parents[0][crossPoint:] )
     return newGen
@@ -93,15 +93,12 @@ def mutation(x: list):
     de la población"""
     mutRate = 0.98
     i = 0
-    j = 0
     while i < len(x):
+        j = 0
         while j < len(x[i]):
-            if random.random() >= mutRate:
-                print(x[i], j)
+            if random() >= mutRate:
                 newAllele = "1" if x[i][j] == "0" else "0"
-                print(newAllele)
                 x[i] = x[i][:j] + newAllele + x[i][j + 1:]
-                print(x[i], "\n")
             j += 1
         i += 1
 
@@ -124,4 +121,6 @@ fitness(fitY, gr)
 
 newGen = crossover(fitX, alleles)
 
+print(newGen)
 mutation(newGen)
+print(newGen)
