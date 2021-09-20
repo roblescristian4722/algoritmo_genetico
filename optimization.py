@@ -102,6 +102,14 @@ def mutation(x: list):
             j += 1
         i += 1
 
+def generatePairs(population: list, domain: dict):
+    """Genera una lista de tuplas de tipo:
+        código_binario: valor del dominio de la función"""
+    pairs = []
+    for i in population:
+        pairs.append([ i, domain[i] ])
+    return pairs
+
 # Datos iniciales
 generations = 20
 domStart = -10
@@ -109,18 +117,26 @@ domEnd = 10
 parentsGeneration = 10
 alleles = 8
 
+# Dominio y rango de la función
 x = codifyData(domStart, domEnd, alleles)
 y = codifyData(domStart, domEnd, alleles)
 gr = greatest(x)
 
-fitX = subdictAsList(x, 0, parentsGeneration - 1)
-fitY = subdictAsList(y, 0, parentsGeneration - 1)
+# Población inicial
+X = subdictAsList(x, 0, parentsGeneration - 1)
+Y = subdictAsList(y, 0, parentsGeneration - 1)
 
-fitness(fitX, gr)
-fitness(fitY, gr)
+print(X)
+print()
 
-newGen = crossover(fitX, alleles)
+fitness(X, gr)
+fitness(Y, gr)
 
-print(newGen)
-mutation(newGen)
-print(newGen)
+newGenX = crossover(X, alleles)
+newGenY = crossover(Y, alleles)
+mutation(newGenX)
+mutation(newGenY)
+
+print(newGenX)
+print()
+print(generatePairs(newGenX, x))
