@@ -117,7 +117,7 @@ def generatePairs(population: list, domain: dict):
 generations = 10000
 domStart = -10
 domEnd = 10
-parentsGeneration = 10
+poblationSize = 25
 alleles = 8
 
 # Dominio y rango de la función
@@ -126,19 +126,19 @@ y = codifyData(domStart, domEnd, alleles)
 gr = greatest(x)
 
 # Población inicial
-X = subdictAsList(x, 0, parentsGeneration - 1)
-Y = subdictAsList(y, 0, parentsGeneration - 1)
+X = subdictAsList(x, 0, poblationSize - 1)
+Y = subdictAsList(y, 0, poblationSize - 1)
 
 while generations > 0:
     fitness(X, gr)
-    # Y = fitness(Y, gr)
+    fitness(Y, gr)
 
     newGenX = crossover(X, alleles)
-    # newGenY = crossover(Y, alleles)
+    newGenY = crossover(Y, alleles)
     mutation(newGenX)
-    # mutation(newGenY)
+    mutation(newGenY)
     X = generatePairs(newGenX, x)
-    # Y = generatePairs(newGenY, y)
+    Y = generatePairs(newGenY, y)
     print(generations)
     generations -= 1
 print(f"X: {X}\n\nY:{Y}")
