@@ -42,13 +42,16 @@ def greatest(x: dict):
 
 def fitness(x: list, greatest):
     """Fitness function"""
-    fit = {}
+    fit = []
+    sumValue = 0
     for k, v in x:
-        fit[k] = -absolute(v) + greatest
+        fitValue = -absolute(v) + greatest
+        fit.append( [ k, fitValue ] )
+        sumValue += fitValue
     # Relative fitness
     x.clear()
-    for k, v in fit.items():
-        x.append([k, fit[k] / sum(fit.values())])
+    for k, v in fit:
+        x.append([k, v / sumValue])
 
 def subdictAsList(x: dict, start, end) -> list:
     """Retorna un subdirectorio de un determinado rango en un directorio en forma
@@ -111,7 +114,7 @@ def generatePairs(population: list, domain: dict):
     return pairs
 
 # Datos iniciales
-generations = 20
+generations = 10000
 domStart = -10
 domEnd = 10
 parentsGeneration = 10
@@ -126,17 +129,16 @@ gr = greatest(x)
 X = subdictAsList(x, 0, parentsGeneration - 1)
 Y = subdictAsList(y, 0, parentsGeneration - 1)
 
-print(X)
-print()
+while generations > 0:
+    fitness(X, gr)
+    # Y = fitness(Y, gr)
 
-fitness(X, gr)
-fitness(Y, gr)
-
-newGenX = crossover(X, alleles)
-newGenY = crossover(Y, alleles)
-mutation(newGenX)
-mutation(newGenY)
-
-print(newGenX)
-print()
-print(generatePairs(newGenX, x))
+    newGenX = crossover(X, alleles)
+    # newGenY = crossover(Y, alleles)
+    mutation(newGenX)
+    # mutation(newGenY)
+    X = generatePairs(newGenX, x)
+    # Y = generatePairs(newGenY, y)
+    print(generations)
+    generations -= 1
+print(f"X: {X}\n\nY:{Y}")
