@@ -40,34 +40,36 @@ def greatest(x: dict):
         greatest = abs(v) if abs(v) > greatest else greatest
     return greatest
 
-def fitness(x: dict, greatest):
+def fitness(x: list, greatest):
     """Fitness function"""
     fit = {}
-    for k, v in x.items():
+    for k, v in x:
         fit[k] = -absolute(v) + greatest
     # Relative fitness
+    x.clear()
     for k, v in fit.items():
-        x[k] = fit[k] / sum(fit.values())
+        x.append([k, fit[k] / sum(fit.values())])
 
-def subdict(x: dict, start, end) -> dict:
-    """Retorna un subdirectorio de un determinado rango en un directorio"""
-    sub = {}
+def subdictAsList(x: dict, start, end) -> list:
+    """Retorna un subdirectorio de un determinado rango en un directorio en forma
+    de lista de duplas"""
+    sub = []
     i = 0
     for k, v in x.items():
         if i >= start and i <= end:
-            sub[k] = v
+            sub.append([k, v])
             if i == end:
                 break
         i += 1
     return sub
 
-def getParents(fit: dict, n: int) -> list:
-    """Realiza la cruza"""
+def getParents(fit: list) -> list:
+    """Retorna una lista de binas de padres que serán cruzados para obtener un hijo"""
     parent = []
     parents = []
-    while (len(parents) < n - 2):
+    while (len(parents) < len(fit) / 2):
         r = random.random()
-        for k, v in fit.items():
+        for k, v in fit:
             if len(parent) == 2:
                 break
             if r < v and ( len(parent) == 0 or (len(parent) == 1 and parent[0] != k) ):
@@ -77,15 +79,31 @@ def getParents(fit: dict, n: int) -> list:
             parent = []
     return parents
 
-def crossover(fit: dict, n: int):
-    for parents in getParents(fit, n):
+def crossover(fit: list, n: int) -> list:
+    """Realiza la cruza"""
+    newGen = []
+    for parents in getParents(fit):
         crossPoint = int(( random.random() * 10 ) % ( n - 1 )) + 1
-        print(crossPoint)
-        print(parents)
-        child1 = parents[0][:crossPoint] + parents[1][crossPoint:]
-        child2 = parents[1][:crossPoint] + parents[0][crossPoint:]
-        print(f"child1: {child1} | child2: {child2}")
+        newGen.append( parents[0][:crossPoint] + parents[1][crossPoint:] )
+        newGen.append( parents[1][:crossPoint] + parents[0][crossPoint:] )
+    return newGen
 
+def mutation(x: list):
+    """Aplica una mutación con un 2% de efectuarse sobre cada bit de los individuos
+    de la población"""
+    mutRate = 0.98
+    i = 0
+    j = 0
+    while i < len(x):
+        while j < len(x[i]):
+            if random.random() >= mutRate:
+                print(x[i], j)
+                newAllele = "1" if x[i][j] == "0" else "0"
+                print(newAllele)
+                x[i] = x[i][:j] + newAllele + x[i][j + 1:]
+                print(x[i], "\n")
+            j += 1
+        i += 1
 
 # Datos iniciales
 generations = 20
@@ -98,10 +116,12 @@ x = codifyData(domStart, domEnd, alleles)
 y = codifyData(domStart, domEnd, alleles)
 gr = greatest(x)
 
-fitX = subdict(x, 0, parentsGeneration - 1)
-fitY = subdict(y, 0, parentsGeneration - 1)
+fitX = subdictAsList(x, 0, parentsGeneration - 1)
+fitY = subdictAsList(y, 0, parentsGeneration - 1)
 
 fitness(fitX, gr)
 fitness(fitY, gr)
 
-crossover(fitX, alleles)
+newGen = crossover(fitX, alleles)
+
+mutation(newGen)
