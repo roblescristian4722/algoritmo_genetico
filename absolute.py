@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-fig = plt.figure()
+# fig = plt.figure()
 ax = plt.axes(projection = "3d")
 
 def absolute(x, y):
@@ -15,6 +15,6 @@ Z = absolute(X, Y)
 ax.plot_surface(X, Y, Z, cmap='viridis', edgecolor='none')
 ax.set_xlabel('x')
 ax.set_ylabel('y')
-ax.set_zlabel('f(x)')
+ax.set_zlabel('f(x, y)')
 
 plt.show()

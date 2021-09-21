@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from random import random
+import matplotlib.pyplot as plt
+import numpy as np
 
 def decimalToBinary(num: int) -> str:
     """Convierte un entero decimal a binario en formato string"""
@@ -114,31 +116,60 @@ def generatePairs(population: list, domain: dict):
     return pairs
 
 # Datos iniciales
-generations = 10000
+generations = 200
 domStart = -10
 domEnd = 10
-poblationSize = 25
+poblationSize = 50
 alleles = 8
 
 # Dominio y rango de la función
-x = codifyData(domStart, domEnd, alleles)
-y = codifyData(domStart, domEnd, alleles)
-gr = greatest(x)
-
+domain = codifyData(domStart, domEnd, alleles)
+gr = greatest(domain)
 # Población inicial
-X = subdictAsList(x, 0, poblationSize - 1)
-Y = subdictAsList(y, 0, poblationSize - 1)
+X = subdictAsList(domain, len(domain) / 2  - poblationSize / 2, len(domain) / 2 + poblationSize / 2 - 1)
 
-while generations > 0:
+# Impresión en consola de datos iniciales
+print("Datos iniciales:")
+print("Generaciones: ", generations)
+print("Tamaño de la población: ", len(X))
+print("Número de alelos: ", alleles)
+print(f"Población inicial (X): [{X[0]}, {X[len(X) - 1]}]")
+print(f"Dominio sobre el que se evaluará la función: \
+    [{list(domain.items())[0]}, {list(domain.items())[len(domain) - 1]}]")
+
+i = 0
+x_evolution = []
+min = abs(domEnd)
+minGen = 0
+xValues = []
+mean = 0
+while i < generations:
     fitness(X, gr)
-    fitness(Y, gr)
-
     newGenX = crossover(X, alleles)
-    newGenY = crossover(Y, alleles)
     mutation(newGenX)
-    mutation(newGenY)
-    X = generatePairs(newGenX, x)
-    Y = generatePairs(newGenY, y)
-    print(generations)
-    generations -= 1
-print(f"X: {X}\n\nY:{Y}")
+    X = generatePairs(newGenX, domain)
+
+    print(f"progreso: {int( i / generations * 100 )}%", end="\r")
+    i += 1
+
+    xValues = [v for _, v in X ]
+    mean = np.mean(xValues)
+    if abs(mean) < min:
+        min = abs(mean)
+        minGen = i
+    x_evolution.append(mean)
+
+fig = plt.figure()
+ax = fig.add_subplot()
+fig.suptitle('Algoritmo genético para función benchmark "absolute"', fontweight='bold')
+ax.set_title('Evolución de la población a través de las generaciones')
+ax.set_ylabel('Promedio de la población (X)')
+ax.set_xlabel('Cantidad de generaciones')
+plt.plot([0 for _ in range(generations)], 'g--', label="Valor óptimo (mínimo global)")
+plt.plot(range(generations), x_evolution, 'b-', label="Evolución de la población")
+plt.plot(minGen, min, 'r*', label="Mejor solución encontrada")
+plt.plot(generations, mean, 'r+', label="Última solución encontrada")
+ax.legend()
+
+print(f"\nResultados:\nX (promedio): {mean}")
+plt.show()
